@@ -40,5 +40,16 @@ define pyenv::install(
     unless  => "grep -q pyenvrc ${shrc}",
     path    => ['/bin', '/usr/bin', '/usr/sbin'],
     require => File["pyenv::pyenvrc ${user}"],
+    before => Exec["pyenv::virtualenv-checkout ${user}"]
+  }
+
+  exec { "pyenv::virtualenv-checkout ${user}":
+    command => "git clone https://github.com/yyuu/pyenv-virtualenv.git ${root_path}/plugins/pyenv-virtualenv",
+    user    => $user,
+    group   => $group,
+    creates => "${root_path}/plugins/pyenv-virtualenv",
+    path    => ['/bin', '/usr/bin', '/usr/sbin'],
+    timeout => 100,
+    cwd     => $home_path,
   }
 }
